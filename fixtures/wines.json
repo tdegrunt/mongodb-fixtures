@@ -1,0 +1,32 @@
+{
+  "merlot": {
+    "name": "Sunnyside Reserve",
+    "year": 2003,
+    "family": "Merlot",
+    "winery": "sunnyside._id"
+  },
+  "pinot": {
+    "name": "Sunnyside Pinot",
+    "year": 2004,
+    "family": "Pinot",
+    "winery": {"path": "sunnyside._id", "as": "winerie"}
+  },
+  "chardonnay": {
+    "name": "Sunnyside Chardonnay",
+    "year": 2005,
+    "family": "Chardonnay",
+    "winery": ["sunnyside._id", "sunnyside._id"]
+  },
+  "elzas": {
+    "name": "Sunnyside Elzas",
+    "year": 2006,
+    "family": "Elzas",
+    "winery": { "paths": ["sunnyside", "sunnyside._id"], "as": "wineries"}
+  },
+  "sirah": {
+    "name": "Sunnyside Sirah",
+    "year": 2007,
+    "family": "Sirah",
+    "wineries": ["sunnyside._id", "sunnyside"]
+  }
+}
