@@ -1,11 +1,14 @@
 var lingo = require('lingo')
   , fs = require('fs')
   , path = require('path')
-  , _ = require('underscore');
+  , _ = require('underscore')
+  , eco = require('eco');
 
 // To be exported ...
 var fixtures = module.exports = {};
 var collections = module.exports.collections = [];
+
+var ISO8601_DATE_FORMAT = /^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?([zZ]|([\+-])([01]\d|2[0-3])\D?([0-5]\d)?)?)?$/
 
 /** @ignore */
 var get = function (obj, path) {
@@ -95,7 +98,13 @@ var load = module.exports.load = function (fixture_path) {
     if (path.extname(file) === ".json") {
       var collectionName = path.basename(file, ".json");
       collections.push(collectionName);
-      fixtures[collectionName] = JSON.parse(fs.readFileSync(path.join(fixture_path||"./fixtures",file)));
+      fixtures[collectionName] = JSON.parse(eco.render(""+fs.readFileSync(path.join(fixture_path||"./fixtures",file)), {}) , function(key, value) {
+        var result = value;
+        if (typeof value === 'string' && value.match(ISO8601_DATE_FORMAT)) {
+          result = new Date(Date.parse(value));
+        }
+        return result;
+      });
     }
   });  
 };

@@ -1,6 +1,6 @@
 {
   "name": "mongodb-fixtures",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "JSON based fixtures for mongodb",
   "keywords": ["mongodb", "mongo", "json", "fixtures"],
   "author": "Tom de Grunt <tom@degrunt.net>",
@@ -9,7 +9,8 @@
   "dependencies": {
     "lingo": ">= 0.0.4",
     "mongodb": ">= 0.9.6",
-    "underscore": ">= 1.2.0"
+    "underscore": ">= 1.2.0",
+    "eco": ">= 1.1.0-rc-1"
   },
   "main": "./mongodb-fixtures.js"
 }

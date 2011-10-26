@@ -7,7 +7,7 @@
   },
   "pinot": {
     "name": "Sunnyside Pinot",
-    "year": 2004,
+    "year": <%= new Date().getFullYear() %>,
     "family": "Pinot",
     "winery": {"path": "sunnyside._id", "as": "winerie"}
   },
@@ -15,7 +15,8 @@
     "name": "Sunnyside Chardonnay",
     "year": 2005,
     "family": "Chardonnay",
-    "winery": ["sunnyside._id", "sunnyside._id"]
+    "winery": ["sunnyside._id", "sunnyside._id"],
+    "productionDate": "<%= new Date().toISOString() %>"
   },
   "elzas": {
     "name": "Sunnyside Elzas",
