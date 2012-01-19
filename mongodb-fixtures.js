@@ -85,7 +85,7 @@ var walk = function(fixtures, obj) {
 };
 
 /**
- * Loads fixtures from the given path.
+ * Loads fixtures from the given path and returns data.
  * @param {string} fixture_path The path to the fixtures
  * @returns {object} fixtures
  */
