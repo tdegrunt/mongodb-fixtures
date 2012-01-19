@@ -87,6 +87,7 @@ var walk = function(fixtures, obj) {
 /**
  * Loads fixtures from the given path.
  * @param {string} fixture_path The path to the fixtures
+ * @returns {object} fixtures
  */
 var load = module.exports.load = function (fixture_path) {
   var fixtures = { collections: [] };
@@ -109,6 +110,7 @@ var load = module.exports.load = function (fixture_path) {
 
 /**
  * Persists the fixtures to the database, clears any and all collections present in the fixtures.
+ * @param {object} fixtures Fixtures returned by load()
  * @param {object} db Database connection
  * @param {function} cb Callback function once completed
  */

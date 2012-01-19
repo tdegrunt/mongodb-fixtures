@@ -6,9 +6,9 @@ var Db = require('mongodb').Db,
 
 var db = new Db('wines', new Server("localhost", Connection.DEFAULT_PORT, {}));
 
-fixtures.load();
-fixtures.save(db, function() {
+var data = fixtures.load();
+fixtures.save(data, db, function() {
   db.close();
-  console.dir(fixtures);
+  console.dir(data);
 });
 
