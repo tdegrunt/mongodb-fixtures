@@ -4,10 +4,6 @@ var lingo = require('lingo')
   , _ = require('underscore')
   , eco = require('eco');
 
-// To be exported ...
-var fixtures = module.exports = {};
-var collections = module.exports.collections = [];
-
 var ISO8601_DATE_FORMAT = /^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?([zZ]|([\+-])([01]\d|2[0-3])\D?([0-5]\d)?)?)?$/
 
 /** @ignore */
@@ -31,7 +27,7 @@ var get = function (obj, path) {
 };
 
 /** @ignore */
-var walk = function(obj) {
+var walk = function(fixtures, obj) {
   var guide;
         
   if(!obj) {
@@ -79,7 +75,7 @@ var walk = function(obj) {
       
       // So it was something else ...
       if(typeof obj[propertyName] === 'object'){
-        walk(obj[propertyName]);
+        walk(fixtures, obj[propertyName]);
       }
       
     }
@@ -89,15 +85,17 @@ var walk = function(obj) {
 };
 
 /**
- * Loads fixtures from the given path.
+ * Loads fixtures from the given path and returns data.
  * @param {string} fixture_path The path to the fixtures
+ * @returns {object} fixtures
  */
 var load = module.exports.load = function (fixture_path) {
+  var fixtures = { collections: [] };
   var files = fs.readdirSync(fixture_path||"./fixtures");
   _.each(files, function(file) {
     if (path.extname(file) === ".json") {
       var collectionName = path.basename(file, ".json");
-      collections.push(collectionName);
+      fixtures.collections.push(collectionName);
       fixtures[collectionName] = JSON.parse(eco.render(""+fs.readFileSync(path.join(fixture_path||"./fixtures",file)), {}) , function(key, value) {
         var result = value;
         if (typeof value === 'string' && value.match(ISO8601_DATE_FORMAT)) {
@@ -106,15 +104,17 @@ var load = module.exports.load = function (fixture_path) {
         return result;
       });
     }
-  });  
+  });
+  return fixtures;
 };
 
 /**
  * Persists the fixtures to the database, clears any and all collections present in the fixtures.
+ * @param {object} fixtures Fixtures returned by load()
  * @param {object} db Database connection
  * @param {function} cb Callback function once completed
  */
-var save = module.exports.save = function(db, cb) {
+var save = module.exports.save = function(fixtures, db, cb) {
   var totalCollectionNr = 0;
   var currentCollectionCounter = 0;
   var totalRecordNr = 0;
@@ -122,9 +122,9 @@ var save = module.exports.save = function(db, cb) {
   
   db.open(function(err, _db) {
 
-    totalCollectionNr = collections.length;
+    totalCollectionNr = fixtures.collections.length;
     // Walk through the collections
-    _.each(collections, function(collectionName) {
+    _.each(fixtures.collections, function(collectionName) {
 
       currentCollectionCounter++;
 
@@ -146,7 +146,7 @@ var save = module.exports.save = function(db, cb) {
               
               // Are we done?
               if ( currentCollectionCounter === totalCollectionNr && currentRecordCounter === totalRecordNr) {
-                populate(db, cb);
+                populate(fixtures, db, cb);
               }
               
             });
@@ -161,17 +161,17 @@ var save = module.exports.save = function(db, cb) {
 };
 
 /** @ignore */
-var populate = function(db, cb) {
+var populate = function(fixtures, db, cb) {
   var propertyPlural, 
     totalCollectionNr = 0, 
     currentCollectionCounter = 0,
     totalRecordNr = 0,
     currentRecordCounter = 0;
 
-  totalCollectionNr = collections.length;
+  totalCollectionNr = fixtures.collections.length;
 
   // Walk through the collections (again!)
-  _.each(collections, function(collectionName) {
+  _.each(fixtures.collections, function(collectionName) {
 
     currentCollectionCounter++;
   
@@ -185,7 +185,7 @@ var populate = function(db, cb) {
         currentRecordCounter++;
 
         // Walk through the keys of a record, recursively
-        walk(fixtures[collectionName][recordId]);
+        walk(fixtures, fixtures[collectionName][recordId]);
         
         // TODO: Only do this when changes take place
         collection.update({'_id': fixtures[collectionName][recordId]._id}, fixtures[collectionName][recordId], true, function(e, docs){
