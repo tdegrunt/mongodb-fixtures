@@ -142,7 +142,9 @@ var save = module.exports.save = function(fixtures, db, cb) {
               currentRecordCounter++;
 
               // Update the fixtures with the id
-              fixtures[collectionName][recordId]['_id'] = docs[0]['_id'];
+              if (docs) {
+                fixtures[collectionName][recordId]['_id'] = docs[0]['_id'];
+              }
               
               // Are we done?
               if ( currentCollectionCounter === totalCollectionNr && currentRecordCounter === totalRecordNr) {
